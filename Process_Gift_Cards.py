@@ -9,7 +9,7 @@ class ProcessGiftCards():
         self.gc_limit = gc_limit
 
     def get_url_endpoint(self):
-        self.url_endpoint = f"http://192.168.1.71/zoeapi/odata/ZoeSellerPromotions?$expand=ZoeSellerPromotionItems&$orderby=CreatedOn desc&$filter=ReceivedEmailAddress eq '{self.user_email}' and PromotionName eq '{self.promo_name}' and PromotionText ne '$0.00' and PromotionText ne 'er000' "
+        self.url_endpoint = f"http://192.168.1.8/pytestapi/odata/GiftCardRecords?$expand=GiftCardItems&$orderby=CreatedOn desc&$filter=ReceivedEmailAddress eq '{self.user_email}' and PromotionName eq '{self.promo_name}' and PromotionText ne '$0.00' and PromotionText ne 'er000' "
 
         return self.url_endpoint
 
@@ -20,7 +20,7 @@ class ProcessGiftCards():
         all_codes = data['value']
 
         if len(all_codes) == 0 or all_codes is None:
-            url_end_point_2 = f"http://192.168.1.71/zoeapi/odata/ZoeSellerPromotions?$expand=ZoeSellerPromotionItems&$orderby=CreatedOn desc&$filter=PromotionName  eq '{self.promo_name}' and PromotionText ne '$0.00' and PromotionText ne 'er000' "
+            url_end_point_2 = f"http://192.168.1.8/pytestapi/odata/GiftCardRecords?$expand=GiftCardItems&$orderby=CreatedOn desc&$filter=PromotionName  eq '{self.promo_name}' and PromotionText ne '$0.00' and PromotionText ne 'er000' "
 
             print(f"\nGetting giftcard for {self.user_email}")
             promo_code_site_response = requests.get(url_end_point_2)
@@ -56,7 +56,7 @@ class ProcessGiftCards():
                         break
 
         if len(self.giftcards_to_use) < self.gc_limit:
-            student_deal_url_end_point = f"http://192.168.1.71/zoeapi/odata/ZoeSellerPromotions?$expand=ZoeSellerPromotionItems&$orderby=CreatedOn desc&$filter=PromotionName eq '{self.promo_name}' and PromotionText ne '$0.00' and PromotionText ne 'er000'  and Notes eq null"
+            student_deal_url_end_point = f"http://192.168.1.8/pytestapi/odata/GiftCardRecords?$expand=GiftCardItems&$orderby=CreatedOn desc&$filter=PromotionName eq '{self.promo_name}' and PromotionText ne '$0.00' and PromotionText ne 'er000'  and Notes eq null"
 
             print(f"\nGetting giftcard for {self.user_email}")
             promo_code_site_response = requests.get(student_deal_url_end_point)
@@ -90,7 +90,7 @@ class ProcessGiftCards():
             notes = f"Used on Order {order_number}"
             status = status
 
-            get_code_url = f"http://192.168.1.71/zoeapi/odata/ZoeSellerPromotions?$expand=ZoeSellerPromotionItems&$orderby=CreatedOn desc&$filter=PromotionCode eq '{promo_code}'"
+            get_code_url = f"http://192.168.1.71/pytestapi/odata/GiftCardRecords?$expand=GiftCardItems&$orderby=CreatedOn desc&$filter=PromotionCode eq '{promo_code}'"
 
             print(f"Getting code details for  for {promo_code}")
             promo_code_site_response = requests.get(get_code_url)
@@ -99,7 +99,7 @@ class ProcessGiftCards():
 
             update_info = {
                 "Id": codes_detail['Id'],
-                "ZoeSellerId": None,
+                "SellerId": None,
                 "SiteName": codes_detail['SiteName'],
                 "Status": status,
                 "EmailMessageId": codes_detail['EmailMessageId'],
@@ -129,7 +129,7 @@ class ProcessGiftCards():
                 "UsedOn": None
             }
 
-            post_info_url = f"http://192.168.1.71/zoeapi/odata/ZoeSellerPromotions({codes_detail['Id']})"
+            post_info_url = f"http://192.168.1.8/pytestapi/odata/GiftCardRecords({codes_detail['Id']})"
 
             try:
                 print(update_info)
@@ -144,11 +144,12 @@ class ProcessGiftCards():
                 data = response.json()
                 print("update posted.")
             except Exception as e:
-                print("ZoeSellerPromotion" + str(e))
+                print("
+                      SellerPromotion" + str(e))
 
 
 def test_class():
-    new_newegg_gift_card = ProcessGiftCards("pytest@pytest.com", "test_run_4")
+    new_newegg_gift_card = ProcessGiftCards("pytest@pytest.com", "test_run_4", 1)
 
     print(f"{new_newegg_gift_card.user_email}")
     print(f"{new_newegg_gift_card.promo_name}")
@@ -156,7 +157,7 @@ def test_class():
     print(f"{new_newegg_gift_card.get_gift_card()}")
 
     status = "Used"
-    order_number = "12312018"
+    order_number = "PY12312018"
 
     new_newegg_gift_card.update_promo_code_status(status, order_number)
 
