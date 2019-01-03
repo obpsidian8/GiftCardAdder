@@ -144,8 +144,7 @@ class ProcessGiftCards():
                 data = response.json()
                 print("update posted.")
             except Exception as e:
-                print("
-                      SellerPromotion" + str(e))
+                print(f"SellerPromotion {e}")
 
 
 def test_class():
